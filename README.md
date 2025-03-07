@@ -33,6 +33,10 @@ Cmd: `pip install gunicorn whitenoise`
 Step 8: Update `settings.py` to setup whitenoise
 ```
 # -------------------------------------------------------
+
+ALLOWED_HOSTS = ['*']
+
+# -------------------------------------------------------
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -96,4 +100,18 @@ Step 3: Click on `New` and select `Web Service`
 
 Step 4: Connect your Github/GitLab/Bitbucker account and selet the repo for deployment or if the repository is public then choose `Public Git Repository` option enter your repo link.
 
-Step 5: 
+Step 5: Configuration of the project on render
+```
+Root Directory: `.`
+Build Command: `pip install -r requirements.txt && python3 manage.py collectstatic --noinput && python3 manage.py makemigrations && python3 manage.py migrate`
+Start Command: `gunicorn <project_name>.wsgi`
+Instance Type: Free
+```
+
+Step 6: Click on `Deploy Web Service`
+
+Wait for the deployment to be done. Once done
+
+Visit Your Project public link provided by render and Your project is successfully deploy 🎉
+
+Everytime you push on your `main` repo branch the project will get deployed automatically
