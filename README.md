@@ -1,57 +1,91 @@
-# django-deployment-free
+# Deploy Your Django Projects For Free
 
+A step-by-step guide on deploying Django projects for free.
 
-If you have already have django project setup and then you can start from `Step 6`
+---
 
-Step 1: Create an virtual environment (env)
-Cmd: `python3 -m venv env`
+## 📌 Prerequisites
 
-Step 2: Activate the env
-Cmd: `source env/bin/activate`
+- Ensure you have Python installed (preferably Python 3.x).
+- Basic knowledge of Django and virtual environments.
 
-Step 3: Install Django
-Cmd: `pip install django`
+If you already have a Django project set up, start from **Step 6**.
 
-Step 4: Create Django project
-Cmd: `django-admin startproject <project_name> .` # `.` creates all django files in current directory
+---
 
-Step 5: Check if Django server is running
-Cmd: `python3 manage.py runserver`
+## 🚀 Setting Up Your Django Project
 
-Step 6: Now configure static files setting in `settings.py`. Add below lines in `settings.py` at last
+### Step 1: Create a Virtual Environment
+```bash
+python3 -m venv env
 ```
+
+### Step 2: Activate the Virtual Environment
+```bash
+source env/bin/activate  # On macOS/Linux
+env\Scripts\activate     # On Windows
+```
+
+### Step 3: Install Django
+```bash
+pip install django
+```
+
+### Step 4: Create a Django Project
+```bash
+django-admin startproject <project_name> .  # The `.` places files in the current directory
+```
+
+### Step 5: Run the Django Development Server
+```bash
+python3 manage.py runserver
+```
+Visit: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+
+---
+
+## 📁 Configuring Static Files
+
+### Step 6: Update `settings.py`
+Add the following lines at the bottom:
+```python
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
-
 STATIC_ROOT = BASE_DIR / "staticfiles"
 ```
 
-Step 7: Install 2 dependencies. Gunicorn (To run the wsgi server) and Whitenoise (To server static files)
-Cmd: `pip install gunicorn whitenoise`
-
-Step 8: Update `settings.py` to setup whitenoise
+### Step 7: Install Dependencies
+```bash
+pip install gunicorn whitenoise
 ```
-# -------------------------------------------------------
 
+### Step 8: Update `settings.py` to Use WhiteNoise
+Modify the following sections:
+
+#### 🔹 `ALLOWED_HOSTS` (For now, allow all hosts)
+```python
 ALLOWED_HOSTS = ['*']
+```
 
-# -------------------------------------------------------
+#### 🔹 `INSTALLED_APPS`
+```python
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'whitenoise.runserver_nostatic', # Added white noise in installed apps
+    'whitenoise.runserver_nostatic',  # Added WhiteNoise
     'django.contrib.staticfiles',
 ]
+```
 
-# -------------------------------------------------------
-
+#### 🔹 `MIDDLEWARE`
+```python
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # Added white noise in middleware
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Added WhiteNoise middleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -59,59 +93,80 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
-# -------------------------------------------------------
-# Enable WhiteNoise compression and caching
-WHITENOISE_USE_FINDERS = True
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-# -------------------------------------------------------
 ```
 
+#### 🔹 Enable WhiteNoise Compression & Caching
+```python
+WHITENOISE_USE_FINDERS = True
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+```
 
-Step 9: Collect all static files
-Cmd: `python manage.py collectstatic`
+---
 
-Step 10: Run WSGI server and check if the static files are being loaded
-Cmd: `gunicorn <project_name>.wsgi`
+## 🔄 Collect Static Files & Run Server
 
-Visit: http://127.0.0.1:8000/admin
+### Step 9: Collect Static Files
+```bash
+python manage.py collectstatic
+```
 
-Step 11: Once everything is working fine stop the server and lets create a requirements.txt
-Cmd: `pip freeze > requirements.txt`
+### Step 10: Run Gunicorn to Test Deployment Readiness
+```bash
+gunicorn <project_name>.wsgi
+```
+Visit: [http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin)
 
-Step 12: Create a `.gitignore` file and paste follwing files to ignore so that code stays clean and not irrelevant files are pushed to repo
-.gitignore:```
+---
+
+## 📌 Preparing for Deployment
+
+### Step 11: Generate `requirements.txt`
+```bash
+pip freeze > requirements.txt
+```
+
+### Step 12: Create a `.gitignore` File
+Add the following to `.gitignore` to avoid pushing unnecessary files:
+```gitignore
 *.pyc
 env/
 staticfiles/
 ```
 
+---
 
-## Here we have completed the django setup. Next would be the deployment part.
+## 🚀 Deploying on Render.com
 
-## Deployment on Render.com
+### Step 1: Visit [Render.com](https://render.com)
 
-Step 1: Visit render.com
+### Step 2: Login/Signup
 
-Step 2: Login/Signup on the Platform
+### Step 3: Click on `New` → `Web Service`
 
-Step 3: Click on `New` and select `Web Service`
+### Step 4: Connect Your GitHub/GitLab/Bitbucket Repository
+- If your repository is public, select `Public Git Repository` and enter your repo link.
 
-Step 4: Connect your Github/GitLab/Bitbucker account and selet the repo for deployment or if the repository is public then choose `Public Git Repository` option enter your repo link.
-
-Step 5: Configuration of the project on render
-```
+### Step 5: Configure the Render Project
+```bash
 Root Directory: `.`
 Build Command: `pip install -r requirements.txt && python3 manage.py collectstatic --noinput && python3 manage.py makemigrations && python3 manage.py migrate`
 Start Command: `gunicorn <project_name>.wsgi`
 Instance Type: Free
 ```
 
-Step 6: Click on `Deploy Web Service`
+### Step 6: Click `Deploy Web Service`
 
-Wait for the deployment to be done. Once done
+### 🎉 Final Step: Your Project is Live!
+Once deployed, visit the public URL provided by Render.
 
-Visit Your Project public link provided by render and Your project is successfully deploy 🎉
+**Note:** Every push to the `main` branch triggers an automatic deployment.
 
-Everytime you push on your `main` repo branch the project will get deployed automatically
+---
+
+## 🎯 Additional Notes
+- If using a database like PostgreSQL, ensure proper configuration in `settings.py`.
+- For production, consider adding environment variables for sensitive settings.
+- Enable Django security settings before public deployment.
+
+Happy Coding! 🚀
+
